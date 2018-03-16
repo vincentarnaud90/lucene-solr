@@ -108,6 +108,20 @@ final public class Automata {
     return makeCharRange(c, c);
   }
 
+  /**
+   * Returns a new (deterministic) automaton that accepts a single codepoint of
+   * the given value and its other case.
+   */
+  public static Automaton makeCharCaseInsensitive(int c) {
+	Automaton a;
+	if (Character.toLowerCase(c) != Character.toUpperCase(c)) {
+	  a = Operations.union(Automata.makeChar(Character.toLowerCase(c)), Automata.makeChar(Character.toUpperCase(c)));
+	} else {
+	  a = Automata.makeChar(c);
+	}
+	return a;
+  }
+
   /** Appends the specified character to the specified state, returning a new state. */
   public static int appendChar(Automaton a, int state, int c) {
     int newState = a.createState();

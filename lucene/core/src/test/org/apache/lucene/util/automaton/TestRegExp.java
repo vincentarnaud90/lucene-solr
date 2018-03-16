@@ -16,7 +16,6 @@
  */
 package org.apache.lucene.util.automaton;
 
-
 import org.apache.lucene.util.LuceneTestCase;
 
 public class TestRegExp extends LuceneTestCase {
@@ -83,4 +82,36 @@ public class TestRegExp extends LuceneTestCase {
     a = new RegExp("#?").toAutomaton(1000);
     assertTrue(a.toString().length() > 0);
   }
+
+  public void testWithCaseInsensitive() throws Exception {
+    CharacterRunAutomaton run = new CharacterRunAutomaton(new RegExp("(?i)a-pa(zU|io)[O-R]apl").toAutomaton());
+    assertTrue(run.run("a-pazUQapl"));
+    assertTrue(run.run("a-pazUQaPl"));
+    assertTrue(run.run("a-pazUpaPl"));
+    assertTrue(run.run("a-paIOpaPl"));
+    assertTrue(run.run("A-paIOpaPl"));
+    assertFalse(run.run("o"));
+    run = new CharacterRunAutomaton(new RegExp("a-pa(?i)(zU|io)[O-R]apl").toAutomaton());
+    assertTrue(run.run("a-pazUQapl"));
+    assertTrue(run.run("a-pazUQaPl"));
+    assertTrue(run.run("a-pazUpaPl"));
+    assertTrue(run.run("a-paIOpaPl"));
+    assertFalse(run.run("A-paIOpaPl"));
+    assertFalse(run.run("o"));
+    assertTrue(run.run("a-pazUQapl"));
+    run = new CharacterRunAutomaton(new RegExp("a-pa(zU|io)(?i)[O-R]apl").toAutomaton());
+    assertTrue(run.run("a-pazUQaPl"));
+    assertTrue(run.run("a-pazUpaPl"));
+    assertFalse(run.run("a-paIOpaPl"));
+    assertFalse(run.run("A-paIOpaPl"));
+    assertFalse(run.run("o"));
+    run = new CharacterRunAutomaton(new RegExp("a-pa(zU|io)[O-R](?i)apl").toAutomaton());
+    assertTrue(run.run("a-pazUQapl"));
+    assertTrue(run.run("a-pazUQaPl"));
+    assertFalse(run.run("a-pazUpaPl"));
+    assertFalse(run.run("a-paIOpaPl"));
+    assertFalse(run.run("A-paIOpaPl"));
+    assertFalse(run.run("o"));
+  }
+
 }
